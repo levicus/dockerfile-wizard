@@ -4,32 +4,32 @@ image_config: &image_config
   # either as project-specific environment variables
   # or as resources in your organization's org-global Context
 
-  IMAGE_NAME: # name your image (no spaces please!)
+  IMAGE_NAME: ubuntu-16.04-sql-server-python3.6
 
-  IMAGE_TAG: # give your image a tag (no spaces please!)
+  IMAGE_TAG: python3.6
 
   # NOTE: if you're modifying this config.yml file manually
   # rather than using the included setup script,
   # make sure you also add the values of your IMAGE_NAME & IMAGE_TAG variables
   # to the `test_image` job (line 55)
 
-  LINUX_VERSION: # DEBIAN_JESSIE, DEBIAN_STRETCH, UBUNTU_TRUSTY, or UBUNTU_XENIAL
+  LINUX_VERSION: UBUNTU_XENIAL
 
-  RUBY_VERSION_NUM: # pick a version from https://cache.ruby-lang.org/pub/ruby
+  # RUBY_VERSION_NUM: # pick a version from https://cache.ruby-lang.org/pub/ruby
 
-  NODE_VERSION_NUM: # pick a version from https://nodejs.org/dist
+  # NODE_VERSION_NUM: # pick a version from https://nodejs.org/dist
 
-  PYTHON_VERSION_NUM: # pick a version from https://python.org/ftp/python
+  PYTHON_VERSION_NUM: 3.6
 
-  JAVA: # Java options: true, false
+  JAVA: false
 
-  MYSQL_CLIENT: # MySQL options: true, false
+  MYSQL_CLIENT: false
 
-  POSTGRES_CLIENT: # Postgres options: true, false
+  POSTGRES_CLIENT: false
 
-  DOCKERIZE: # Dockerize options: true, false
+  DOCKERIZE: false
 
-  BROWSERS: # browser tools (Xvfb, PhantomJS, Firefox, Chrome, Chromedriver): true, false
+  BROWSERS: false
 
 version: 2
 jobs:
@@ -41,53 +41,149 @@ jobs:
     steps:
       - checkout
 
-##      - run: bash scripts/generate.sh > Dockerfile
+      - run:
+          name: Install sudo
+          command: |
+            apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*
 
-##      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - run:
+          name: Install git
+          command: |
+            apt-get update && apt-get install -y git
+            
+      - run:
+          name: Install software-properties-common
+          command: |
+            apt-get install -y software-properties-common
 
-##      - run: docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
+      - run:
+          name: Install Python
+          command: |
+            sudo add-apt-repository ppa:deadsnakes/ppa -y
+            sudo apt-get update && sudo apt-get install -y python3.6 python3.6-dev
 
-##      - run: docker push $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG && sleep 10
+      - run:
+          name: Install curl
+          command: |
+            sudo apt-get install -y curl
 
-##      - store_artifacts:
-##          path: Dockerfile
+      - run:
+          name: Install apt-transport-https
+          command: |
+            sudo apt-get update && sudo apt-get install -y apt-transport-https
 
-##  test_image:
-##    docker:
-##      - image: $DOCKER_USERNAME/(name of image):(image tag)
-##        environment:
-##          <<: *image_config
+      - run:
+          name: Install locales
+          command: |
+            sudo apt-get install -y locales
 
-##    steps:
-##      - checkout
+      - run:
+          name: Set locale
+          command: |
+            echo 'LANG=en_US.UTF-8' >> /etc/default/locale
+            export LANG=en_US.UTF-8
+            sudo locale-gen en_US.UTF-8
+            sudo dpkg-reconfigure -fnoninteractive locales
 
-##      - run:
-##          name: start Xvfb for phantomjs test
-##          command: Xvfb :99
-##          background: true
+      - run:
+          name: Configure MSSQL Repo
+          command: |
+            curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+            sudo su -c "echo 'deb [arch=amd64] https://packages.microsoft.com/ubuntu/16.04/prod xenial main' > /etc/apt/sources.list.d/mssql-release.list"
 
-##      - run:
-##          name: bats tests
-##          command: |
-##            mkdir -p test_results/bats
-##            bats scripts/tests.bats | \
-##            perl scripts/tap-to-junit.sh > \
-##            test_results/bats/results.xml
+      - run:
+          name: Install Linux Dependencies
+          command: |
+            sudo apt-get update && sudo apt-get install -y freetds-dev libssl-dev tdsodbc libstdc++6 libffi-dev libgss3 xmlsec1
 
-##      - store_test_results:
-##          path: test_results
+      - run:
+          name: Install MSODBCSQL Driver
+          command: |
+            sudo ACCEPT_EULA=Y apt-get install -y msodbcsql=13.0.1.0-1
 
-##      - store_artifacts:
-##          path: test_results
+      - run:
+          name: Install UTF16 Support for unixodbc-dev
+          command: |
+            sudo apt-get install -y unixodbc-dev-utf16
 
-##workflows:
-##  version: 2
-##  dockerfile_wizard:
-##    jobs:
-##      - build:
-##          context: org-global
 
-##      - test_image:
-##          context: org-global
-##          requires:
-##            - build
+      - run:
+          name: Install libcurl4
+          command: |
+            sudo apt-get install -y libcurl4-openssl-dev
+
+      - run:
+          name: Install and upgrade pip
+          command: |
+            sudo apt-get install -y python3-pip
+            sudo pip3 install --upgrade pip
+
+      - run:
+          name: Install virtualenv
+          command: |
+            pip3 install virtualenv
+      - run:
+          name: Install aws-cli
+          command: |
+            sudo pip3 install awscli
+
+      - run:
+          name: Install wget
+          command: |
+            sudo apt-get install -y wget
+
+      - run:
+          name: Install jq
+          command: |
+            sudo apt-get install -y jq
+
+      - run: bash scripts/generate.sh > Dockerfile
+
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+
+      - run: docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
+
+      - run: docker push $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG && sleep 10
+
+      - store_artifacts:
+          path: Dockerfile
+
+  test_image:
+    docker:
+      - image: $DOCKER_USERNAME/ubuntu-16.04-sql-server-python3.6:python3.6
+        environment:
+          <<: *image_config
+
+    steps:
+      - checkout
+
+      - run:
+          name: start Xvfb for phantomjs test
+          # command: Xvfb :99
+          # background: true
+
+      - run:
+          name: bats tests
+          command: |
+            mkdir -p test_results/bats
+            bats scripts/tests.bats | \
+            perl scripts/tap-to-junit.sh > \
+            test_results/bats/results.xml
+
+      - store_test_results:
+          path: test_results
+
+      - store_artifacts:
+          path: test_results
+
+workflows:
+  version: 2
+  dockerfile_wizard:
+    jobs:
+      - build:
+          context: org-global
+
+      - test_image:
+          context: org-global
+          requires:
+            - build
