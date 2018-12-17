@@ -15,8 +15,8 @@ image_config: &image_config
 version: 2
 jobs:
   build:
-    docker:
-      - image: ubuntu:16.04
+    machine:
+      image: ubuntu:16.04
 
     steps:
       - checkout
@@ -139,7 +139,7 @@ jobs:
 
   test_image:
     docker:
-      - image: $DOCKER_USERNAME/ubuntu-16.04-sql-server-python3.6:python3.6
+      - image: $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG
         environment:
           <<: *image_config
 
