@@ -13,9 +13,9 @@ jobs:
     steps:
       - checkout
       - run:
-          name: test clear
+          name: Install sudo
           command: |
-            sudo rm -rf /var/lib/apt/lists/*
+            apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*
 
       - run:
           name: Install git
