@@ -83,7 +83,7 @@ jobs:
       - run:
           name: Install UTF16 Support for unixodbc-dev
           command: |
-            sudo apt-get install -y unixodbc-dev-utf16
+            sudo apt-get install -y unixodbc-utf16 odbcinst1debian2-utf16 unixodbc-dev-utf16
 
       - run:
           name: Install MSODBCSQL Driver
