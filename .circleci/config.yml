@@ -6,11 +6,11 @@ image_config: &image_config
 
   IMAGE_NAME: ubuntu-16.04-sql-server-python3.6
 
-  IMAGE_TAG: python3.6
+  IMAGE_TAG: python3.6-ubuntu-16.04
 
   LINUX_VERSION: UBUNTU_XENIAL
 
-  PYTHON_VERSION_NUM: 3.6
+  PYTHON_VERSION_NUM: false
 
   JAVA: false
 
