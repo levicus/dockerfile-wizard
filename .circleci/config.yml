@@ -1,9 +1,5 @@
 image_config: &image_config
 
-  IMAGE_NAME: python36-xenial
-
-  IMAGE_TAG: rdapi
-
   LINUX_VERSION: UBUNTU_XENIAL
 
 version: 2
@@ -122,11 +118,11 @@ jobs:
 
       - run: bash scripts/generate.sh > Dockerfile
 
-      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - run: sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
-      - run: docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
+      - run: sudo docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
 
-      - run: docker push $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG && sleep 10
+      - run: sudo docker push $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG && sleep 10
 
       - store_artifacts:
           path: Dockerfile
