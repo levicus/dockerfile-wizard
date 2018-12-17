@@ -1,8 +1,10 @@
 image_config: &image_config
 
-  IMAGE_NAME: ubuntu-16.04-sql-server-python3.6
+  IMAGE_NAME: python36-xenial
 
-  IMAGE_TAG: python3.6-ubuntu-16.04
+  IMAGE_TAG: rdapi
+
+  LINUX_VERSION: UBUNTU_XENIAL
 
 version: 2
 jobs:
