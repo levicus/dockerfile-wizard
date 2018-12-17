@@ -87,7 +87,7 @@ jobs:
       - run:
           name: Install MSODBCSQL Driver
           command: |
-            sudo apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql=13.0.1.0-1
+            sudo ACCEPT_EULA=Y apt-get install -y msodbcsql=13.0.1.0-1
 
       - run:
           name: Install UTF16 Support for unixodbc-dev
