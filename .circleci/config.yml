@@ -33,6 +33,7 @@ jobs:
       - checkout
       - run:
           name: test clear
+          command: |
             sudo rm -rf /var/lib/apt/lists/*
 
       - run:
