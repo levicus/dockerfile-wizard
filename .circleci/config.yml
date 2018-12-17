@@ -2,6 +2,16 @@ image_config: &image_config
 
   LINUX_VERSION: UBUNTU_XENIAL
 
+  JAVA: false
+
+  MYSQL_CLIENT: false
+
+  POSTGRES_CLIENT: false
+
+  DOCKERIZE: true
+
+  BROWSERS: false
+
 version: 2
 jobs:
   build:
