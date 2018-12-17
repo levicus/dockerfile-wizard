@@ -101,7 +101,7 @@ jobs:
       - run:
           name: Install wget
           command: |
-            sudo apt-get install -y wgetz
+            sudo apt-get install -y wget
 
       - run:
           name: Install jq
