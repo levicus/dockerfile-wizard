@@ -78,17 +78,17 @@ jobs:
       - run:
           name: Install Linux Dependencies
           command: |
-            sudo apt-get update && sudo apt-get install -y freetds-dev libssl-dev tdsodbc libstdc++6 libffi-dev libgss3 xmlsec1
-
-      - run:
-          name: Install MSODBCSQL Driver
-          command: |
-            sudo ACCEPT_EULA=Y apt-get install -y msodbcsql=13.0.1.0-1
+            sudo apt-get update && sudo apt-get install -y freetds-dev libssl-dev tdsodbc libc6 libstdc++6 libffi-dev libgss3 xmlsec1
 
       - run:
           name: Install UTF16 Support for unixodbc-dev
           command: |
             sudo apt-get install -y unixodbc-dev-utf16
+
+      - run:
+          name: Install MSODBCSQL Driver
+          command: |
+            sudo ACCEPT_EULA=Y apt-get install -y msodbcsql=13.0.1.0-1
 
       - run:
           name: Install libcurl4
