@@ -8,7 +8,7 @@ image_config: &image_config
 
   IMAGE_TAG: python3.6-ubuntu-16.04
 
-  LINUX_VERSION: UBUNTU_XENIAL
+  LINUX_VERSION: UBUNTU_XENIAL/UBUNTU_XENIAL
 
   PYTHON_VERSION_NUM: false
 
